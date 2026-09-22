@@ -18,7 +18,7 @@
 | 流量统计 | luci-app-statistics（collectd） |
 | 网络加速 | TurboACC（Flow Offload），**BBR 由内核直接启用并设为默认拥塞算法** |
 | 主题 | Argon + Argon 主题设置 |
-| 登录 | 管理地址 `10.0.1.1`，用户名 `root`，**密码首次登录时自行设置** |
+| 登录 | 管理地址 `10.0.1.1`，用户名 `root`，密码 `password` |
 
 ## 插件来源
 

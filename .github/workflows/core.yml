@@ -19,7 +19,7 @@ on:
       hostname:
         required: false
         type: string
-        default: OWRT
+        default: OpenWRT
         description: 默认主机名
       lan_ip:
         required: false
@@ -282,7 +282,7 @@ jobs:
 
             - 管理地址：http://${{ env.WRT_IP }}
             - 用户名：root
-            - 密码：首次登录时自行设置
+            - 密码：password
 
             ## 已编译插件
 

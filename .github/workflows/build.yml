@@ -47,7 +47,7 @@ jobs:
       # 默认主题
       theme: argon
       # 默认主机名
-      hostname: OWRT
+      hostname: OpenWRT
       # 默认管理地址
       lan_ip: 10.0.1.1
       # 源码仓库（Lean 大的 lede）
