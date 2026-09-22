@@ -52,9 +52,9 @@ on:
         default: false
         description: 仅输出 .config，不编译固件
 
-permissions:
-  contents: write
-  actions: write
+# 不声明 permissions：reusable workflow 的 GITHUB_TOKEN 权限继承调用方
+# （GitHub 规则：被调用工作流权限不能超过调用方），build.yml 已声明
+# contents: write + actions: write
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
