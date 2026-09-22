@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: MIT
+# OpenWRT-CI-X86 编译入口工作流
+# 触发方式：手动触发 / 每日 05:00（北京时间）/ 清理完成后自动触发
+name: OpenWrt-Build
+
+on:
+  # 手动编译
+  workflow_dispatch:
+    inputs:
+      config:
+        description: 编译配置
+        default: X86
+        required: true
+        type: choice
+        options:
+          - X86
+      extra_packages:
+        description: 手动追加的 CONFIG_PACKAGE_* 行（每行一个）
+        required: false
+        type: string
+      test:
+        description: 仅输出 .config，不编译固件
+        default: false
+        required: false
+        type: boolean
+  # 每日自动编译（UTC 21:00 = 北京时间 05:00）
+  schedule:
+    - cron: '0 21 * * *'
+  # 清理完成后自动编译
+  workflow_run:
+    workflows: ["OpenWrt-Cleanup"]
+    types:
+      - completed
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: X86_64
+    # 调用公用编译核心
+    uses: ./.github/workflows/core.yml
+    with:
+      # 编译配置
+      config: ${{ inputs.config || 'X86' }}
+      # 默认主题
+      theme: argon
+      # 默认主机名
+      hostname: OWRT
+      # 默认管理地址
+      lan_ip: 10.0.1.1
+      # 源码仓库（Lean 大的 lede）
+      repo: https://github.com/coolsnowwolf/lede.git
+      branch: master
+      source: coolsnnowwolf/lede
+      # 手动追加插件
+      extra_packages: ${{ inputs.extra_packages || '' }}
+      # 仅输出配置文件
+      test: ${{ inputs.test || false }}

@@ -1,0 +1,35 @@
+# SPDX-License-Identifier: MIT
+# OpenWRT-CI-X86 定期清理工作流
+# 每周一 04:30（北京时间）清理历史 Releases 与构建缓存；可手动触发
+name: OpenWrt-Cleanup
+
+on:
+  schedule:
+    - cron: '30 20 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出工作流项目
+        uses: actions/checkout@v4
+
+      - name: 清理历史 Releases 与 Workflows
+        uses: ophub/delete-releases-workflows@main
+        with:
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_releases: true
+          releases_keep_latest: 3
+          delete_tags: true
+          delete_workflows: true
+          workflows_keep_day: 7
+
+      - name: 清理全部构建缓存
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh cache delete --all || true
