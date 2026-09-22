@@ -259,7 +259,8 @@ jobs:
           # WRT_SOURCE_FILE 已由 prepare 步骤将 "/" 替换为 "-"，可直接用于 tag
           tag_name: ${{ env.WRT_CONFIG }}-${{ env.WRT_SOURCE_FILE }}-${{ env.WRT_BRANCH }}-${{ env.WRT_DATE }}
           name: ${{ env.WRT_CONFIG }} 固件 ${{ env.WRT_DATE }}
-          files: ./wrt/upload/*.*
+          # 用 "*" 而非 "*.*"，否则无扩展名的 sha256sums 不会被上传
+          files: ./wrt/upload/*
           body: |
             ## 固件信息
 
@@ -291,6 +292,10 @@ jobs:
     if: ${{ !inputs.test && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
+      # gh cache 需要 git 仓库上下文，必须先检出
+      - name: 检出工作流项目
+        uses: actions/checkout@v4
+
       - name: 删除同前缀的过期缓存
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -298,10 +303,11 @@ jobs:
           set -euo pipefail
 
           # 保留本次生成的缓存，删除同前缀的历史缓存，避免触碰 10GB 上限
-          gh cache list --key "${{ needs.build.outputs.cache_prefix }}-" --limit 100 --json id,key --jq '.[] | [.id, .key] | @tsv' |
+          # -R 显式指定仓库，避免依赖本地 git 上下文
+          gh cache list -R "${{ github.repository }}" --key "${{ needs.build.outputs.cache_prefix }}-" --limit 100 --json id,key --jq '.[] | [.id, .key] | @tsv' |
             while IFS=$'\t' read -r CACHE_ID CACHE_KEY; do
               [ -n "$CACHE_ID" ] || continue
               [ "$CACHE_KEY" = "${{ needs.build.outputs.cache_key }}" ] && continue
-              gh cache delete "$CACHE_ID" ||
+              gh cache delete -R "${{ github.repository }}" "$CACHE_ID" ||
                 echo "warning: 删除缓存 $CACHE_ID ($CACHE_KEY) 失败"
             done
