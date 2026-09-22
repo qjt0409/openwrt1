@@ -23,9 +23,9 @@ on:
         default: false
         required: false
         type: boolean
-  # 每日自动编译（UTC 21:17 = 北京时间 05:17，错峰避开整点高峰）
+  # 每日自动编译（UTC 20:26 = 北京时间 04:26，错峰避开整点高峰）
   schedule:
-    - cron: '17 21 * * *'
+    - cron: '26 20 * * *'
   # 清理完成后自动编译
   workflow_run:
     workflows: ["OpenWrt-Cleanup"]
