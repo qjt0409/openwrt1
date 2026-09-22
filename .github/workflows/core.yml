@@ -191,6 +191,14 @@ jobs:
           cd ./wrt
           bash $GITHUB_WORKSPACE/Scripts/patches.sh
 
+      - name: 注入默认配置文件（中文界面等）
+        run: |
+          cd ./wrt
+          mkdir -p files
+          cp -r $GITHUB_WORKSPACE/Files/. files/
+          echo ">> 已注入 Files/ 默认配置:"
+          find files -type f | sort
+
       - name: 生成编译配置
         run: |
           cd ./wrt
