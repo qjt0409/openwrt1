@@ -55,5 +55,6 @@ jobs:
       source: coolsnnowwolf/lede
       # 手动追加插件
       extra_packages: ${{ inputs.extra_packages || '' }}
-      # 仅输出配置文件
-      test: ${{ inputs.test || false }}
+      # 仅输出配置文件（workflow_dispatch 的 boolean 输入在 inputs 上下文中是字符串，
+      # 需显式归一化为 boolean，否则 workflow_call 的 boolean 参数类型校验失败）
+      test: ${{ inputs.test == 'true' || inputs.test == true }}

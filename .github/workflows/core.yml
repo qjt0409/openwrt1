@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       cache_prefix: ${{ steps.prepare.outputs.cache_prefix }}
-      cache_key: ${{ steps.prepare.outputs.cache_key }}
+      cache_key: ${{ steps.clone.outputs.cache_key }}
     steps:
       - name: 检出工作流项目
         uses: actions/checkout@v4
