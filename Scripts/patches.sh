@@ -61,4 +61,14 @@ if [ -n "$SYSJS" ]; then
 	echo ">> 已写入编译日期标识 $WRT_MARK-$WRT_DATE"
 fi
 
+# ---------- 6. 升级 dnsmasq 到 2.92（PassWall 要求 >=2.92） ----------
+DNSMASQ_MAKE="./package/network/services/dnsmasq/Makefile"
+if [ -f "$DNSMASQ_MAKE" ]; then
+	sed -i 's/PKG_UPSTREAM_VERSION:=2.91/PKG_UPSTREAM_VERSION:=2.92/' "$DNSMASQ_MAKE"
+	sed -i 's|PKG_HASH:=.*|PKG_HASH:=4bf50c2c1018f9fbc26037df51b90ecea0cb73d46162846763b92df0d6c3a458|' "$DNSMASQ_MAKE"
+	echo ">> dnsmasq 已升级到 2.92"
+else
+	echo "!! 未找到 dnsmasq Makefile，跳过"
+fi
+
 echo ">> 全部补丁应用完成"
