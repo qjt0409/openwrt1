@@ -71,6 +71,18 @@ clone_pkg istore-src linkease/istore main
 for d in luci-app-store luci-lib-taskd luci-lib-xterm taskd; do
 	extract_dir "$PACKAGE_DIR/istore-src/luci/$d" "$d"
 done
+# iStore 前端语言由 i18n.translate("istore_vue_lang") 决定，
+# 未翻译时默认 en。注入 po 翻译让前端使用中文。
+mkdir -p "$PACKAGE_DIR/luci-app-store/po/zh-cn"
+cat > "$PACKAGE_DIR/luci-app-store/po/zh-cn/app.po" <<'PO'
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-cn\n"
+
+msgid "istore_vue_lang"
+msgstr "zh-cn"
+PO
 rm -rf "$PACKAGE_DIR/istore-src"
 
 # ---------- 易有云 LinkEase（大仓库按需提取） ----------

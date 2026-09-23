@@ -96,6 +96,8 @@ CONFIG_PACKAGE_kmod-veth=y
 CONFIG_PACKAGE_kmod-wireguard=y
 
 # ===================== 基础组件 =====================
+# 防火墙：使用 fw4 (nftables)，PassWall 需要完整 nftables 环境
+CONFIG_PACKAGE_firewall4=y
 CONFIG_PACKAGE_luci-compat=y
 CONFIG_PACKAGE_luci-lua-runtime=y
 CONFIG_PACKAGE_luci-lib-ipkg=y
