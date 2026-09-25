@@ -63,8 +63,7 @@ clone_pkg luci-app-lucky gdy666/luci-app-lucky main
 # IP 限速（x86 专用）
 clone_pkg luci-app-eqosplus sirpdboy/luci-app-eqosplus main
 
-# ---------- 文件列表：Alist ----------
-clone_pkg luci-app-alist sbwml/luci-app-alist main
+# ---------- 文件列表：Alist（已按用户要求移除，不编译） ----------
 
 # ---------- iStore 应用商店（大仓库按需提取） ----------
 clone_pkg istore-src linkease/istore main

@@ -71,4 +71,18 @@ else
 	echo "!! 未找到 dnsmasq Makefile，跳过"
 fi
 
+# ---------- 7. Dockerman 菜单提升为顶级 "Docker" ----------
+# lede feed 默认把 dockerman 挂在"服务"分类下（admin/services/dockerman，标题 Dockerman JS）。
+# 用户要求 Docker 为独立顶级菜单（图2 布局），全局替换菜单路径并改标题。
+if [ -d "./feeds/luci/applications/luci-app-dockerman" ]; then
+	grep -rl "admin/services/dockerman" ./feeds/luci/applications/luci-app-dockerman 2>/dev/null | while read -r F; do
+		sed -i 's|admin/services/dockerman|admin/docker|g' "$F"
+	done
+	sed -i 's/"Dockerman JS"/"Docker"/' \
+		./feeds/luci/applications/luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json
+	echo ">> Dockerman 菜单已提升为顶级 Docker"
+else
+	echo "!! 未找到 luci-app-dockerman，跳过菜单补丁"
+fi
+
 echo ">> 全部补丁应用完成"

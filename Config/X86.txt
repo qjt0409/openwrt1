@@ -19,6 +19,8 @@ CONFIG_PACKAGE_luci-app-argon-config=y
 
 # ===================== 科学上网 =====================
 CONFIG_PACKAGE_luci-app-passwall=y
+# PassWall 集成 Hysteria 2（用户要求，界面中显示 Hysteria 版本）
+CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Hysteria=y
 CONFIG_PACKAGE_luci-app-passwall2=y
 
 # ===================== 消息推送 =====================
@@ -33,13 +35,14 @@ CONFIG_PACKAGE_luci-app-uhttpd=y
 CONFIG_PACKAGE_luci-app-mwan3=y
 CONFIG_PACKAGE_luci-app-ttyd=y
 CONFIG_PACKAGE_luci-app-commands=y
+# 看门狗（Watchcat）：网络连通性监测，异常自动重启/断网重连
+CONFIG_PACKAGE_luci-app-watchcat=y
 # IP 限速（lede feed 自带 eqos 依赖高通 NSS 驱动，x86 不可用，改用 eqosplus）
 CONFIG_PACKAGE_luci-app-eqosplus=y
 
 # ===================== 文件与存储 =====================
-# 易有云 / Alist / OpenList / 网络共享(Samba4) / 磁盘管理
+# 易有云 / OpenList / 网络共享(Samba4) / 磁盘管理（alist 已按要求移除）
 CONFIG_PACKAGE_luci-app-linkease=y
-CONFIG_PACKAGE_luci-app-alist=y
 CONFIG_PACKAGE_luci-app-openlist=y
 CONFIG_PACKAGE_luci-app-samba4=y
 CONFIG_PACKAGE_luci-app-diskman=y
