@@ -84,6 +84,11 @@ msgstr "zh-cn"
 PO
 rm -rf "$PACKAGE_DIR/istore-src"
 
+# ---------- 容器：luci-lib-docker（Docker Engine API 库，用户要求保留） ----------
+clone_pkg luci-lib-docker-src lisaac/luci-lib-docker master
+extract_dir "$PACKAGE_DIR/luci-lib-docker-src/collections/luci-lib-docker" luci-lib-docker
+rm -rf "$PACKAGE_DIR/luci-lib-docker-src"
+
 # ---------- 易有云 LinkEase（大仓库按需提取） ----------
 clone_pkg nas-packages linkease/nas-packages master
 for d in linkease linkease-common-bin; do
