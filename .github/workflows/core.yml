@@ -164,7 +164,7 @@ jobs:
           cd ./wrt
           ./scripts/feeds update -a
 
-      - name: 移除 lede 自带 OAF（改用上游新版 OpenAppFilter）
+      - name: 移除 lede 自带 OAF / lucky（改用上游新版）
         run: |
           # lede 自带的 open-app-filter / luci-app-appfilter 为旧版，
           # 与 packages.sh 安装的上游新版（luci-app-oaf v7）存在同名包冲突，
@@ -172,6 +172,12 @@ jobs:
           rm -rf ./wrt/feeds/packages/net/open-app-filter
           rm -rf ./wrt/feeds/luci/applications/luci-app-appfilter
           echo ">> 已移除 lede 自带 OAF（open-app-filter / luci-app-appfilter）"
+          # lede feed 自带旧版 lucky（packages 2.17.8）与界面包（装 /etc/init.d/lucky），
+          # 均与 gdy666 官方最新版（lucky 2.27.2 + luci-app-lucky 2.2.2）冲突，
+          # 移除后由 packages.sh 统一安装 gdy666 官方版（界面包不装 init.d，无文件冲突）。
+          rm -rf ./wrt/feeds/packages/net/lucky
+          rm -rf ./wrt/feeds/luci/applications/luci-app-lucky
+          echo ">> 已移除 lede 自带 lucky（packages/net/lucky + luci/applications/luci-app-lucky）"
 
       - name: 安装 feeds
         run: |

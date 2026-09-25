@@ -59,11 +59,20 @@ clone_pkg luci-app-wechatpush tty228/luci-app-wechatpush master
 
 # ---------- 网络工具 ----------
 clone_pkg luci-app-ddns-go sirpdboy/luci-app-ddns-go main
-clone_pkg luci-app-lucky gdy666/luci-app-lucky main
-# lede packages feed 自带旧版 lucky（2.17.8），与 gdy666 最新版（2.27.2）同名冲突，
-# 移除 feed 版本保证用最新版（含 install 后的符号链接）
+# lucky：官方 gdy666 仓库（程序 + 界面两个子包，均取 main 最新）
+# 程序包 lucky/（PKG_VERSION=2.27.2，装 /etc/init.d/lucky）
+# 界面包 luci-app-lucky/（仅装 luckyarch，不装 init.d，避免文件冲突）
+clone_pkg luci-app-lucky-src gdy666/luci-app-lucky main
+extract_dir "$PACKAGE_DIR/luci-app-lucky-src/lucky" lucky
+extract_dir "$PACKAGE_DIR/luci-app-lucky-src/luci-app-lucky" luci-app-lucky
+rm -rf "$PACKAGE_DIR/luci-app-lucky-src"
+# 移除 lede feed 同名源，避免与 gdy666 最新版冲突：
+#   feeds/packages/net/lucky  （旧版 2.17.8，同名包覆盖导致用不上最新版）
+#   feeds/luci/applications/luci-app-lucky  （界面包也安装 /etc/init.d/lucky，
+#     与 lucky 程序包重复安装同一文件 -> opkg check_data_file_clashes 冲突）
 rm -rf ./package/feeds/packages/net/lucky ./feeds/packages/net/lucky
-echo ">> 已移除 lede feed 自带旧版 lucky（避免与 gdy666 2.27.2 冲突）"
+rm -rf ./package/feeds/luci/applications/luci-app-lucky ./feeds/luci/applications/luci-app-lucky
+echo ">> 已用 gdy666 官方版（lucky 2.27.2 + luci-app-lucky 2.2.2），并移除 lede feed 同名旧源"
 # IP 限速（x86 专用）
 clone_pkg luci-app-eqosplus sirpdboy/luci-app-eqosplus main
 

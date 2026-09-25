@@ -30,6 +30,7 @@ CONFIG_PACKAGE_luci-app-wechatpush=y
 
 # ===================== 网络工具 =====================
 CONFIG_PACKAGE_luci-app-ddns-go=y
+CONFIG_PACKAGE_lucky=y
 CONFIG_PACKAGE_luci-app-lucky=y
 CONFIG_PACKAGE_luci-app-uhttpd=y
 CONFIG_PACKAGE_luci-app-mwan3=y
