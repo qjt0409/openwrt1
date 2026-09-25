@@ -178,6 +178,16 @@ jobs:
           rm -rf ./wrt/feeds/packages/net/lucky
           rm -rf ./wrt/feeds/luci/applications/luci-app-lucky
           echo ">> 已移除 lede 自带 lucky（packages/net/lucky + luci/applications/luci-app-lucky）"
+          # lede feed 自带旧版 passwall 全家桶（界面 luci-app-passwall 26.9.1 + xray-core 26.6.1 等依赖），
+          # 均落后于 Openwrt-Passwall 官方 main（passwall 26.9.16 / xray-core 26.9.9），
+          # 移除后由 packages.sh 统一安装官方最新版（界面 + 全部依赖）。
+          rm -rf ./wrt/feeds/luci/applications/luci-app-passwall
+          for p in xray-core sing-box hysteria chinadns-ng dns2socks geoview ipt2socks \
+                   microsocks naiveproxy shadow-tls shadowsocks-rust shadowsocksr-libev \
+                   simple-obfs tcping v2ray-geodata v2ray-plugin xray-plugin; do
+            rm -rf "./wrt/feeds/packages/net/$p"
+          done
+          echo ">> 已移除 lede 自带 passwall 全家桶（luci-app-passwall + 17 个依赖包）"
 
       - name: 安装 feeds
         run: |

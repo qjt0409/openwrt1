@@ -43,9 +43,48 @@ extract_dir() {
 }
 
 # ---------- 科学上网：PassWall / PassWall2 ----------
-clone_pkg openwrt-passwall-packages Openwrt-Passwall/openwrt-passwall-packages main
-clone_pkg openwrt-passwall Openwrt-Passwall/openwrt-passwall main
-clone_pkg openwrt-passwall2 Openwrt-Passwall/openwrt-passwall2 main
+# openwrt-passwall 仓库根无 Makefile（多包仓库），需提取子目录到 package/<包名>，
+# 目录名与包名一致时才会覆盖 lede feed 自带旧版（lucky 已验证此机制）。
+# 依赖包 monorepo：全部子目录提取，确保 passwall 全家桶均为 Openwrt-Passwall 官方最新。
+clone_pkg openwrt-passwall-src Openwrt-Passwall/openwrt-passwall main
+extract_dir "$PACKAGE_DIR/openwrt-passwall-src/luci-app-passwall" luci-app-passwall
+rm -rf "$PACKAGE_DIR/openwrt-passwall-src"
+
+clone_pkg openwrt-passwall2-src Openwrt-Passwall/openwrt-passwall2 main
+extract_dir "$PACKAGE_DIR/openwrt-passwall2-src/luci-app-passwall2" luci-app-passwall2
+rm -rf "$PACKAGE_DIR/openwrt-passwall2-src"
+
+clone_pkg openwrt-passwall-packages-src Openwrt-Passwall/openwrt-passwall-packages main
+for sub in "$PACKAGE_DIR/openwrt-passwall-packages-src"/*/; do
+	name=$(basename "$sub")
+	[ -f "$sub/Makefile" ] || continue
+	extract_dir "${sub%/}" "$name"
+done
+rm -rf "$PACKAGE_DIR/openwrt-passwall-packages-src"
+
+# 移除 lede feed 自带旧版 passwall 全家桶（界面 + 依赖），
+# 避免同名包覆盖官方最新版（xray-core 26.6.1 -> 26.9.9 等）
+rm -rf ./package/feeds/luci/applications/luci-app-passwall \
+	./feeds/luci/applications/luci-app-passwall \
+	./package/feeds/packages/net/xray-core ./feeds/packages/net/xray-core \
+	./package/feeds/packages/net/sing-box ./feeds/packages/net/sing-box \
+	./package/feeds/packages/net/hysteria ./feeds/packages/net/hysteria \
+	./package/feeds/packages/net/chinadns-ng ./feeds/packages/net/chinadns-ng \
+	./package/feeds/packages/net/dns2socks ./feeds/packages/net/dns2socks \
+	./package/feeds/packages/net/geoview ./feeds/packages/net/geoview \
+	./package/feeds/packages/net/ipt2socks ./feeds/packages/net/ipt2socks \
+	./package/feeds/packages/net/microsocks ./feeds/packages/net/microsocks \
+	./package/feeds/packages/net/naiveproxy ./feeds/packages/net/naiveproxy \
+	./package/feeds/packages/net/shadow-tls ./feeds/packages/net/shadow-tls \
+	./package/feeds/packages/net/shadowsocks-rust ./feeds/packages/net/shadowsocks-rust \
+	./package/feeds/packages/net/shadowsocksr-libev ./feeds/packages/net/shadowsocksr-libev \
+	./package/feeds/packages/net/simple-obfs ./feeds/packages/net/simple-obfs \
+	./package/feeds/packages/net/tcping ./feeds/packages/net/tcping \
+	./package/feeds/packages/net/v2ray-geodata ./feeds/packages/net/v2ray-geodata \
+	./package/feeds/packages/net/v2ray-plugin ./feeds/packages/net/v2ray-plugin \
+	./package/feeds/packages/net/xray-plugin ./feeds/packages/net/xray-plugin \
+	2>/dev/null || true
+echo ">> 已用 Openwrt-Passwall 官方最新全家桶，并移除 lede feed 同名旧版"
 
 # ---------- Argon 主题与主题设置 ----------
 clone_pkg luci-theme-argon jerrykuku/luci-theme-argon master
