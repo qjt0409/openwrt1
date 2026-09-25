@@ -60,6 +60,10 @@ clone_pkg luci-app-wechatpush tty228/luci-app-wechatpush master
 # ---------- 网络工具 ----------
 clone_pkg luci-app-ddns-go sirpdboy/luci-app-ddns-go main
 clone_pkg luci-app-lucky gdy666/luci-app-lucky main
+# lede packages feed 自带旧版 lucky（2.17.8），与 gdy666 最新版（2.27.2）同名冲突，
+# 移除 feed 版本保证用最新版（含 install 后的符号链接）
+rm -rf ./package/feeds/packages/net/lucky ./feeds/packages/net/lucky
+echo ">> 已移除 lede feed 自带旧版 lucky（避免与 gdy666 2.27.2 冲突）"
 # IP 限速（x86 专用）
 clone_pkg luci-app-eqosplus sirpdboy/luci-app-eqosplus main
 
