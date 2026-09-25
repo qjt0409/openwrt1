@@ -85,4 +85,39 @@ else
 	echo "!! 未找到 luci-app-dockerman，跳过菜单补丁"
 fi
 
+# ---------- 8. 顶级菜单重排（用户指定顺序） ----------
+# 目标顺序: 状态10 系统20 iStore30 Docker40 服务50 网络存储60 Control70 网络80 统计90 退出999
+python3 - <<'EOF'
+import json
+
+# luci-base: services 30->50, nas 40->60, vpn 50->70, network 60->80
+p = "./feeds/luci/modules/luci-base/root/usr/share/luci/menu.d/luci-base.json"
+d = json.load(open(p))
+d["admin/services"]["order"] = 50
+d["admin/nas"]["order"] = 60
+d["admin/vpn"]["order"] = 70
+d["admin/network"]["order"] = 80
+json.dump(d, open(p, "w"), indent="\t")
+
+# statistics: 80->90
+p = "./feeds/luci/applications/luci-app-statistics/root/usr/share/luci/menu.d/luci-app-statistics.json"
+d = json.load(open(p))
+d["admin/statistics"]["order"] = 90
+json.dump(d, open(p, "w"), indent="\t")
+EOF
+
+# Dockerman 顶级菜单 order 60->40（与顶级 Docker 菜单一致）
+sed -i '/"admin\/docker": {/,/^	}/ s/"order": "60"/"order": 40/' \
+	./feeds/luci/applications/luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json
+
+# iStore (store.lua): 31->30
+sed -i 's/call("redirect_index"), _("iStore"), 31/call("redirect_index"), _("iStore"), 30/' \
+	./package/luci-app-store/luasrc/controller/store.lua
+
+# Control (eqosplus.lua): 44->70
+sed -i 's/firstchild(), "Control", 44/firstchild(), "Control", 70/' \
+	./package/luci-app-eqosplus/luasrc/controller/eqosplus.lua
+
+echo ">> 顶级菜单已重排: 状态10 系统20 iStore30 Docker40 服务50 网络存储60 Control70 网络80 统计90 退出999"
+
 echo ">> 全部补丁应用完成"
