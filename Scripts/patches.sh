@@ -120,4 +120,24 @@ sed -i 's/firstchild(), "Control", 44/firstchild(), "Control", 70/' \
 
 echo ">> 顶级菜单已重排: 状态10 系统20 iStore30 Docker40 服务50 网络存储60 Control70 网络80 统计90 退出999"
 
+# ---------- 9. Watchcat 默认配置安全化（防止"刷机后无限重启"） ----------
+# 问题: lede feed 自带默认 mode=ping_reboot + pinghosts=8.8.8.8 + forcedelay=30,
+#      且 init 无 enable 开关(默认启用)。刷机后 WAN 未就绪(未配 PPPoE/拨号慢/升级
+#      保留配置网络恢复慢)时, 开机约 30 秒 ping 不通 8.8.8.8 即触发 reboot -> 无限重启循环。
+# 修复: 默认改为 ping 内网网关(10.0.1.1, 路由器自身, 仅系统卡死才触发) + 延迟 600s,
+#      外网监测由用户在界面按需改回(如 8.8.8.8)。
+WC_CFG=$(find ./feeds/packages/utils/watchcat/files -name "watchcat.config" 2>/dev/null | head -1)
+if [ -n "$WC_CFG" ]; then
+	cat > "$WC_CFG" <<'WCCFG'
+config watchcat
+	option period '1d'
+	option mode 'ping_reboot'
+	option pinghosts '10.0.1.1'
+	option forcedelay '600'
+WCCFG
+	echo ">> Watchcat 默认配置已安全化（ping 内网网关 10.0.1.1 / 延迟 600s，防重启循环）"
+else
+	echo "!! 未找到 watchcat.config，跳过安全化补丁"
+fi
+
 echo ">> 全部补丁应用完成"
