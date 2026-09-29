@@ -42,7 +42,7 @@ extract_dir() {
 	echo ">> 提取: $src -> $PACKAGE_DIR/$dest"
 }
 
-# ---------- 科学上网：PassWall / PassWall2 ----------
+# ---------- 科学上网：PassWall / PassWall2 / OpenClash ----------
 # openwrt-passwall 仓库根无 Makefile（多包仓库），需提取子目录到 package/<包名>，
 # 目录名与包名一致时才会覆盖 lede feed 自带旧版（lucky 已验证此机制）。
 # 依赖包 monorepo：全部子目录提取，确保 passwall 全家桶均为 Openwrt-Passwall 官方最新。
@@ -85,6 +85,19 @@ rm -rf ./package/feeds/luci/applications/luci-app-passwall \
 	./package/feeds/packages/net/xray-plugin ./feeds/packages/net/xray-plugin \
 	2>/dev/null || true
 echo ">> 已用 Openwrt-Passwall 官方最新全家桶，并移除 lede feed 同名旧版"
+
+# ---------- OpenClash（vernesong 官方源） ----------
+# 仓库根无 Makefile，提取 luci-app-openclash 子目录到 package/<包名>，
+# 并移除 lede feed 自带旧版，保证用官方 master 最新（0.47.156+）。
+# 注：clash / clash-meta 内核不在固件内，首次运行在 OpenClash 界面「内核下载」获取
+# （可先用 PassWall 代理保证能下载）。
+clone_pkg openclash-src vernesong/OpenClash master
+extract_dir "$PACKAGE_DIR/openclash-src/luci-app-openclash" luci-app-openclash
+rm -rf "$PACKAGE_DIR/openclash-src"
+rm -rf ./package/feeds/luci/applications/luci-app-openclash \
+	./feeds/luci/applications/luci-app-openclash \
+	2>/dev/null || true
+echo ">> 已用 OpenClash 官方最新版，并移除 lede feed 自带旧版"
 
 # ---------- Argon 主题与主题设置 ----------
 clone_pkg luci-theme-argon jerrykuku/luci-theme-argon master

@@ -188,6 +188,10 @@ jobs:
             rm -rf "./wrt/feeds/packages/net/$p"
           done
           echo ">> 已移除 lede 自带 passwall 全家桶（luci-app-passwall + 17 个依赖包）"
+          # lede luci feed 自带旧版 luci-app-openclash，
+          # 移除后由 packages.sh 安装 vernesong/OpenClash 官方 master 最新版。
+          rm -rf ./wrt/feeds/luci/applications/luci-app-openclash
+          echo ">> 已移除 lede 自带 luci-app-openclash"
 
       - name: 安装 feeds
         run: |

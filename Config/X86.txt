@@ -22,6 +22,8 @@ CONFIG_PACKAGE_luci-app-passwall=y
 # PassWall 集成 Hysteria 2（用户要求，界面中显示 Hysteria 版本）
 CONFIG_PACKAGE_luci-app-passwall_INCLUDE_Hysteria=y
 CONFIG_PACKAGE_luci-app-passwall2=y
+# OpenClash（vernesong 官方源；依赖 dnsmasq-full/bash/curl/ca-bundle/ip-full/ruby/ruby-yaml/kmod-tun/unzip 自动拉取；clash 内核首次运行时在界面内下载）
+CONFIG_PACKAGE_luci-app-openclash=y
 
 # ===================== 消息推送 =====================
 # 全能推送 / 微信推送（原 ServerChan，已更名 luci-app-wechatpush）
