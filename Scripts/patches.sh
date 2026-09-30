@@ -118,6 +118,23 @@ sed -i 's/call("redirect_index"), _("iStore"), 31/call("redirect_index"), _("iSt
 sed -i 's/firstchild(), "Control", 44/firstchild(), "Control", 70/' \
 	./package/luci-app-eqosplus/luasrc/controller/eqosplus.lua
 
+# ---------- 8b. 修复 lua controller 覆盖 admin/nas 分组 order 的问题 ----------
+# 问题: LuCI 新版加载顺序为 先 menu.d/*.json 后 controller/*.lua，后加载的 lua 会覆盖 json 里的 order。
+#       luci-app-vsftpd 等包的 controller 里硬编码 entry({"admin","nas"}, firstchild(), "NAS", 44/45)，
+#       把上面 python 刚设好的 admin/nas order=60 覆盖成 44，导致网络存储(44) 跑到服务(50) 前面。
+# 修复: 全量扫描 feeds/luci 与 package/ 下所有 controller lua，把 nas 分组 firstchild 的 order 统一刷成 60。
+NAS_CTRLS=$(grep -rlE 'entry\(\{"admin", *"nas"\}, *firstchild' \
+	./feeds/luci/applications ./feeds/luci/modules ./package 2>/dev/null \
+	| grep '/luasrc/controller/.*\.lua$' || true)
+if [ -n "$NAS_CTRLS" ]; then
+	for F in $NAS_CTRLS; do
+		sed -i -E 's/(entry\(\{"admin", *"nas"\}, *firstchild\(\),[^,]*), *[0-9]+/\1, 60/' "$F"
+		echo ">> 修复 nas 分组 order -> 60: ${F#./}"
+	done
+else
+	echo ">> 未发现 lua controller 注册 nas 分组，跳过"
+fi
+
 echo ">> 顶级菜单已重排: 状态10 系统20 iStore30 Docker40 服务50 网络存储60 Control70 网络80 统计90 退出999"
 
 # ---------- 9. Watchcat 默认配置安全化（防止"刷机后无限重启"） ----------
