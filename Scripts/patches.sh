@@ -173,18 +173,26 @@ fi
 
 # 修复: 上游 v1.7.6 release 包打错了——tar.gz 内顶层目录名仍是 1.7.5，
 # 导致 install 段按 $(PKG_BUILD_DIR)/heif-converter 找文件时多嵌套一层目录而失败。
-# 在 Makefile 末尾追加 Build/Configure（make 后定义覆盖前面空定义），
-# 把内层目录里的文件提到 PKG_BUILD_DIR 根。
-cat >> "$LE_MAKE" <<'LEFIX'
-
-# 上游 tarball 内层目录名版本号不一致（1.7.6 包内实际是 1.7.5 目录），
-# install 段找不到 heif-converter / linkease-media。Configure 阶段提到根目录。
-define Build/Configure
-	if ls $(PKG_BUILD_DIR)/linkease-common-bin-*-linux-* >/dev/null 2>&1; then \
-		mv $(PKG_BUILD_DIR)/linkease-common-bin-*-linux-*/* $(PKG_BUILD_DIR)/; \
-	fi
-endef
-LEFIX
-echo ">> 已追加 linkease-common-bin 内层目录提升补丁"
+# 直接替换 Makefile 里原有的空 Build/Configure 定义（必须在 BuildPackage 之前），
+# 把内层嵌套目录里的文件提到 PKG_BUILD_DIR 根。
+python3 - "$LE_MAKE" <<'PYEOF'
+import sys, re
+p = sys.argv[1]
+s = open(p).read()
+new_cfg = '''define Build/Configure
+\t# 上游 tarball 内层目录名版本号不一致（1.7.6 包内实际是 1.7.5 目录），
+\t# install 段找不到 heif-converter / linkease-media。提到 PKG_BUILD_DIR 根。
+\tif ls $(PKG_BUILD_DIR)/linkease-common-bin-*-linux-* >/dev/null 2>&1; then \\
+\t\tmv $(PKG_BUILD_DIR)/linkease-common-bin-*-linux-*/* $(PKG_BUILD_DIR)/; \\
+\tfi
+endef'''
+# 替换原有的空 Build/Configure 定义
+s2, n = re.subn(r'^define Build/Configure\s*\nendef\s*$', new_cfg, s, count=1, flags=re.M)
+if n == 1:
+    open(p, 'w').write(s2)
+    print(">> 已替换空 Build/Configure 为内层目录提升逻辑")
+else:
+    print("!! 未找到空 Build/Configure 定义，未修改")
+PYEOF
 
 echo ">> 全部补丁应用完成"
