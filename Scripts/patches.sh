@@ -157,4 +157,18 @@ else
 	echo "!! 未找到 watchcat.config，跳过安全化补丁"
 fi
 
+# ---------- 10. 修复 linkease-common-bin 上游 CONTROL hack 导致编译失败 ----------
+# 问题: linkease/nas-packages 上游最近在 linkease-common-bin/Makefile 末尾加了一段
+#       递归变量覆盖 CONTROL 的 hack（用于 OpenWrt 24.10 追加 Replaces 字段），
+#       该写法在 lede openwrt-25.12 构建系统上 make 解析即报错（1 秒失败）。
+# 修复: 直接删掉这段不兼容的 CONTROL 覆盖块（全新安装不需要从旧版 linkease 迁移的 Replaces）。
+LE_MAKE="./package/linkease-common-bin/Makefile"
+if [ -f "$LE_MAKE" ] && grep -q "LINKEASE_COMMON_BIN_GENERATED_CONTROL" "$LE_MAKE"; then
+	# 从 "# OpenWrt 24.10 does not expose" 这行注释开始，删到文件末尾
+	sed -i '/^# OpenWrt 24.10 does not expose/,$d' "$LE_MAKE"
+	echo ">> 已移除 linkease-common-bin 不兼容的 CONTROL hack（上游 24.10 补丁在 25.12 报错）"
+else
+	echo ">> linkease-common-bin Makefile 无 CONTROL hack 或不存在，跳过"
+fi
+
 echo ">> 全部补丁应用完成"
