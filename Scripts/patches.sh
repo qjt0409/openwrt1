@@ -173,11 +173,11 @@ fi
 
 # 修复: 上游 v1.7.6 release 包打错了——tar.gz 内顶层目录名仍是 1.7.5，
 # install 段按 $(PKG_BUILD_DIR)/heif-converter 找文件时多嵌套一层目录而失败。
-# 直接改 install 段路径，用 shell 通配符匹配实际文件位置。
+# 用 find 在 install 时动态定位文件实际路径，不依赖目录名。
 sed -i \
-	-e 's|\$(PKG_BUILD_DIR)/heif-converter|$(PKG_BUILD_DIR)/linkease-common-bin-*-linux-*/heif-converter|g' \
-	-e 's|\$(PKG_BUILD_DIR)/linkease-media|$(PKG_BUILD_DIR)/linkease-common-bin-*-linux-*/linkease-media|g' \
+	-e 's#\$(PKG_BUILD_DIR)/heif-converter#`find $(PKG_BUILD_DIR) -name heif-converter -type f | head -1`#g' \
+	-e 's#\$(PKG_BUILD_DIR)/linkease-media#`find $(PKG_BUILD_DIR) -name linkease-media -type f | head -1`#g' \
 	"$LE_MAKE"
-echo ">> 已修改 linkease-common-bin install 段路径为通配符匹配"
+echo ">> 已修改 linkease-common-bin install 段用 find 动态定位文件"
 
 echo ">> 全部补丁应用完成"
