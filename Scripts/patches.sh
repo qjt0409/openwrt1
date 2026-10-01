@@ -72,7 +72,8 @@ else
 fi
 
 # ---------- 7. 顶级菜单重排（用户指定顺序） ----------
-# 目标顺序: 状态10 系统20 iStore30 服务50 网络存储60 Control70 网络80 统计90 退出999
+# 目标顺序: 状态10 系统20 iStore30 Docker40 服务50 网络存储60 Control70 网络80 统计90 退出999
+# Docker40 由 lisaac/luci-app-dockerman 的 controller 原生注册（admin/docker, order 40），无需补丁
 python3 - <<'EOF'
 import json
 
@@ -117,7 +118,7 @@ else
 	echo ">> 未发现 lua controller 注册 nas 分组，跳过"
 fi
 
-echo ">> 顶级菜单已重排: 状态10 系统20 iStore30 服务50 网络存储60 Control70 网络80 统计90 退出999"
+echo ">> 顶级菜单已重排: 状态10 系统20 iStore30 Docker40 服务50 网络存储60 Control70 网络80 统计90 退出999"
 
 # ---------- 9. Watchcat 默认配置安全化（防止"刷机后无限重启"） ----------
 # 问题: lede feed 自带默认 mode=ping_reboot + pinghosts=8.8.8.8 + forcedelay=30,

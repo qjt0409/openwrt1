@@ -51,7 +51,13 @@ CONFIG_PACKAGE_luci-app-samba4=y
 CONFIG_PACKAGE_luci-app-diskman=y
 
 # ===================== 容器 =====================
-# Docker 不预装，用户装完系统后自行通过 iStore/opkg 安装
+# Docker 中文前端 luci-app-dockerman（lisaac 维护版，现代完整管理界面，顶级 Docker 菜单）
+# + docker/dockerd/docker-compose（packages feed 后端）+ luci-lib-docker（Docker Engine API 库）
+CONFIG_PACKAGE_luci-app-dockerman=y
+CONFIG_PACKAGE_docker=y
+CONFIG_PACKAGE_dockerd=y
+CONFIG_PACKAGE_docker-compose=y
+CONFIG_PACKAGE_luci-lib-docker=y
 
 # ===================== 行为管理（OAF） =====================
 CONFIG_PACKAGE_luci-app-oaf=y

@@ -77,7 +77,7 @@
 
 - **增删插件**：编辑 `Config/X86.txt`，按需增删 `CONFIG_PACKAGE_xxx=y` 行；修改后先跑一次 `test` 模式验证。
 - **插件源码**：`Scripts/packages.sh` 管理所有外部插件克隆与提取（多包仓库自动按子目录落地）。
-- **默认参数**：`Scripts/patches.sh`（BBR、dnsmasq 2.92、Dockerman 菜单、顶级菜单重排）、`Scripts/settings.sh`（配置合并 + 中文语言符号）。
+- **默认参数**：`Scripts/patches.sh`（BBR、dnsmasq 2.92、顶级菜单重排）、`Scripts/settings.sh`（配置合并 + 中文语言符号）。
 - **更换源码**：修改 `build.yml` 中 `repo` / `branch` / `source` 三个参数。
 
 ## 注意事项

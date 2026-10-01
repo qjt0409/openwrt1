@@ -149,6 +149,23 @@ msgstr "zh-cn"
 PO
 rm -rf "$PACKAGE_DIR/istore-src"
 
+# ---------- 容器：Dockerman 中文前端 + Docker Engine API 库（参照 qjt0409/openwrt 方案） ----------
+# - luci-app-dockerman：lisaac/luci-app-dockerman（dockerman 原作者维护，中文界面；
+#   仓库根无 Makefile，需提取 applications/luci-app-dockerman 子目录；
+#   Makefile 已自动依赖 luci-lib-docker / docker / dockerd / luci-compat / luci-lib-ip / ttyd；
+#   controller 原生注册顶级 admin/docker 菜单 order 40）
+# - luci-lib-docker：lisaac/luci-lib-docker（Docker Engine API 库，dockerman 运行必需；
+#   仓库结构 collections/luci-lib-docker，需提取）
+# 先移除 lede feed 自带同名旧版（luci-app-dockerman / luci-lib-docker），避免同名包重复定义。
+rm -rf ./package/feeds/luci/applications/luci-app-dockerman ./feeds/luci/applications/luci-app-dockerman
+rm -rf ./package/feeds/luci/applications/luci-lib-docker ./feeds/luci/applications/luci-lib-docker
+clone_pkg luci-app-dockerman-src lisaac/luci-app-dockerman master
+extract_dir "$PACKAGE_DIR/luci-app-dockerman-src/applications/luci-app-dockerman" luci-app-dockerman
+rm -rf "$PACKAGE_DIR/luci-app-dockerman-src"
+clone_pkg luci-lib-docker-src lisaac/luci-lib-docker master
+extract_dir "$PACKAGE_DIR/luci-lib-docker-src/collections/luci-lib-docker" luci-lib-docker
+rm -rf "$PACKAGE_DIR/luci-lib-docker-src"
+
 # ---------- 易有云 LinkEase（大仓库按需提取） ----------
 clone_pkg nas-packages linkease/nas-packages master
 for d in linkease linkease-common-bin; do
