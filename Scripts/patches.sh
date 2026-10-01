@@ -71,22 +71,8 @@ else
 	echo "!! 未找到 dnsmasq Makefile，跳过"
 fi
 
-# ---------- 7. Dockerman 菜单提升为顶级 "Docker" ----------
-# lede feed 默认把 dockerman 挂在"服务"分类下（admin/services/dockerman，标题 Dockerman JS）。
-# 用户要求 Docker 为独立顶级菜单（图2 布局），全局替换菜单路径并改标题。
-if [ -d "./feeds/luci/applications/luci-app-dockerman" ]; then
-	grep -rl "admin/services/dockerman" ./feeds/luci/applications/luci-app-dockerman 2>/dev/null | while read -r F; do
-		sed -i 's|admin/services/dockerman|admin/docker|g' "$F"
-	done
-	sed -i 's/"Dockerman JS"/"Docker"/' \
-		./feeds/luci/applications/luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json
-	echo ">> Dockerman 菜单已提升为顶级 Docker"
-else
-	echo "!! 未找到 luci-app-dockerman，跳过菜单补丁"
-fi
-
-# ---------- 8. 顶级菜单重排（用户指定顺序） ----------
-# 目标顺序: 状态10 系统20 iStore30 Docker40 服务50 网络存储60 Control70 网络80 统计90 退出999
+# ---------- 7. 顶级菜单重排（用户指定顺序） ----------
+# 目标顺序: 状态10 系统20 iStore30 服务50 网络存储60 Control70 网络80 统计90 退出999
 python3 - <<'EOF'
 import json
 
@@ -105,10 +91,6 @@ d = json.load(open(p))
 d["admin/statistics"]["order"] = 90
 json.dump(d, open(p, "w"), indent="\t")
 EOF
-
-# Dockerman 顶级菜单 order 60->40（与顶级 Docker 菜单一致）
-sed -i '/"admin\/docker": {/,/^	}/ s/"order": "60"/"order": 40/' \
-	./feeds/luci/applications/luci-app-dockerman/root/usr/share/luci/menu.d/luci-app-dockerman.json
 
 # iStore (store.lua): 31->30
 sed -i 's/call("redirect_index"), _("iStore"), 31/call("redirect_index"), _("iStore"), 30/' \
@@ -135,7 +117,7 @@ else
 	echo ">> 未发现 lua controller 注册 nas 分组，跳过"
 fi
 
-echo ">> 顶级菜单已重排: 状态10 系统20 iStore30 Docker40 服务50 网络存储60 Control70 网络80 统计90 退出999"
+echo ">> 顶级菜单已重排: 状态10 系统20 iStore30 服务50 网络存储60 Control70 网络80 统计90 退出999"
 
 # ---------- 9. Watchcat 默认配置安全化（防止"刷机后无限重启"） ----------
 # 问题: lede feed 自带默认 mode=ping_reboot + pinghosts=8.8.8.8 + forcedelay=30,
